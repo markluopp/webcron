@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    </head>
+    <body>
+    <h3><%= @job.title+" "+@job.status+" at "+@job.last_end_at.to_s %></h3>
+    <h3>execution time(seconds): <%= @history.execution_time %></h3>
+    <h3>verbose log:</h3> 
+    <% @history.log.split("\n").each do |l| %>
+        <p><%= l %></p>
+    <% end %>
+    </body>
+</html>

@@ -1,0 +1,158 @@
+<div class="container">
+	<%= render 'shared/header' %>
+	<%= render 'shared/error_msg' %>
+	<div class="panel panel-info">
+		<div class="panel-heading"><h3>Job Scheduler Console</h3></div>
+		<div class="panel-body">
+			<p class="text-info">Timezone: GMT+8 | Current User: <%= @user.username %></p>
+		</div>
+		<%= render 'joblist'%>		
+	</div>
+	<%= link_to 'Create New Job', new_user_job_path(@user), class: "btn btn-success", onclick: "window.clearInterval(refresh)" %>
+	<%= link_to 'Logout', logout_user_path(@user), class: "btn btn-warning", onclick: "window.clearInterval(refresh)" %>
+</div>
+
+<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
+	<li><a id="modify" href="#" onclick="window.clearInterval(refresh)">Modify</a></li>
+	<li><a data-toggle="modal" data-target="#delete_confirm">Delete</a></li> 
+	<li class="divider"></li>
+	<li><a id="run" href="#" data-remote="true">Run</a></li>
+	<li><a id="abort" href="#" data-remote="true">Abort</a></li>
+	<li class="divider"></li>
+	<li><a id="log" href="#" onclick="window.clearInterval(refresh)">Log</a></li>
+</ul>
+
+<!-- Modal -->
+<div id="delete_confirm" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4 class="modal-title">Are you sure?</h4>
+      </div>
+      <div class="modal-footer">
+     	<a id="delete" class="btn btn-danger" href="" data-method="delete">Yes</a> 
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function ($, window) {
+
+    $.fn.contextMenu = function (settings) {
+
+        return this.each(function () {
+
+            // Open context menu
+            $(this).on("contextmenu", function (e) {
+                // return native menu if pressing control
+                if (e.ctrlKey) return;
+                
+                //open menu
+                var $menu = $(settings.menuSelector)
+                    .data("invokedOn", $(e.target))
+                    .show()
+                    .css({
+                        position: "absolute",
+                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
+                        top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+                    })
+                    .off('click')
+                    .on('click', 'a', function (e) {
+                        $menu.hide();
+                
+                        var $invokedOn = $menu.data("invokedOn");
+                        var $selectedMenu = $(e.target);
+                        
+                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
+                    });
+                
+                return false;
+            });
+
+            //make sure menu closes on any click
+            $('body').click(function () {
+                $(settings.menuSelector).hide();
+            });
+        });
+        
+        function getMenuPosition(mouse, direction, scrollDir) {
+            var win = $(window)[direction](),
+                scroll = $(window)[scrollDir](),
+                menu = $(settings.menuSelector)[direction](),
+                position = mouse + scroll;
+                        
+            // opening menu would pass the side of the page
+            if (mouse + menu > win && menu < mouse) 
+                position -= menu;
+            
+            return position;
+        }    
+
+    };
+})(jQuery, window);
+
+$("td").contextMenu({
+    menuSelector: "#contextMenu",
+    menuSelected: function (invokedOn, selectedMenu) {
+	var job_tr=invokedOn.parent()
+	while (! job_tr.attr('id'))
+	{
+		job_tr=job_tr.parent()
+	}
+	switch(selectedMenu.text()) {
+	case 'Modify':
+		$('#modify').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/edit')
+		break;
+	case 'Delete':
+		$('#delete').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id'))
+		break;
+	case 'Run':
+		$('#run').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/run')
+		break;
+	case 'Abort':
+		$('#abort').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/abort')
+		break;
+	case 'Log':
+		$('#log').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/historys')
+		break;
+
+	}	
+    }
+});
+
+
+var refresh=window.setInterval(function(){
+  // call your function here
+	//location.reload();
+	$.getJSON('/users/<%= escape_javascript(@user.id.to_s) %>/jobs/refresh.json', function(data){
+		$.each( data, function( key, val ) {
+			$('#'+val.id+'_status').html(val.status)
+			$('#'+val.id+'_progress').html(val.progress)
+			$('#'+val.id+'_progress').attr('aria-valuenow',val.progress)		
+			$('#'+val.id+'_progress').attr('style','width:'+val.progress)
+			//$('#'+val.id+'_last_end_at').html(val.last_end_at)
+			//$('#'+val.id+'_next_run_at').html(val.next_run_at)
+			if (val.status=='Failed')
+			{	$('tr#'+val.id).attr('class','danger')
+				$('#'+val.id+'_status').attr('class','text-danger')
+				$('#'+val.id+'_progress').attr('class','progress-bar progress-bar-danger progress-bar-striped')
+			}
+			else
+			{	//$('tr#'+val.id).attr('class','info')
+				$('#'+val.id+'_status').attr('class','text-info')
+				if (val.status=='Successed')
+				{	$('#'+val.id+'_progress').attr('class','progress-bar progress-bar-success progress-bar-striped')
+				}
+				else
+				{	$('#'+val.id+'_progress').attr('class','progress-bar progress-bar-info progress-bar-striped')
+				}
+			}
+		});		
+	})	
+},3000);
+
+</script>

@@ -1,0 +1,47 @@
+<div class="container">
+    <div class="row">
+    	<div class="jumbotron" style="margin-top: 20%;">
+    		<h1>Developer Tools</h1> 
+    		<p class="text-info">balabala...</p>
+    	</div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-4 col-md-3">
+        <div class="thumbnail">
+        	<%= image_tag("pet_logo.png", size: "250x250", class: 'img-responsive img-center') %>
+            <div class="caption">
+                <h3>PET Monitor</h3>
+                <p>...</p>
+                <p><a href="<%= user_jobs_path(@user) %>" class="btn btn-default" role="button">Launch</a></p>
+            </div>
+        </div>
+        </div>
+        
+        <div class="col-sm-4 col-md-3">
+        <div class="thumbnail">
+        	<%= image_tag("hub_logo.png", size: "250x250", class: 'img-responsive img-center') %>
+            <div class="caption">
+                <h3>Report Hub</h3>
+                <p>...</p>
+                <p><a href="http://ecg-analytics-618762.lvs01.eaz.ebayc3.com/hub" class="btn btn-default" role="button">Launch</a></p>
+            </div>
+        </div>
+        </div>
+
+        <div class="col-sm-4 col-md-3">
+        <div class="thumbnail">
+        	<%= image_tag("tunnel_logo.png", size: "250x250", class: 'img-responsive img-center') %>
+            <div class="caption">
+                <h3>Tunnel</h3>
+                <p>...</p>
+                <p><a href="http://ecg-analytics-618762.lvs01.eaz.ebayc3.com/tunnel" class="btn btn-default" role="button">Launch</a></p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <%= link_to 'Logout', logout_user_path(@user), class: "btn btn-warning" %>
+    </div>
+</div> 

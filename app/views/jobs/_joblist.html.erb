@@ -1,0 +1,41 @@
+<div class="table-responsive" style="overflow-x: auto">
+    <table id="<%= @user.id %>" class="table table-striped">
+		<thead><tr>
+			<th><%= link_to 'Job Title', sort_user_jobs_path(@user,:sort_by=>"last_end_at"), class: "btn btn-large", remote: true %></th>
+			<th>Job Type</th>	
+			<th><%= link_to 'Status', sort_user_jobs_path(@user,:sort_by=>"status"), class: "btn btn-large", remote: true %></th> 
+			<th>Progress</th>	
+			<th><%= link_to 'Last End At', sort_user_jobs_path(@user,:sort_by=>"last_end_at"), class: "btn btn-large", remote: true %></th>
+			<th><%= link_to 'Next Run At', sort_user_jobs_path(@user,:sort_by=>"next_run_at"), class: "btn btn-large", remote: true %></th> 
+			<th><%= link_to 'Frequency', sort_user_jobs_path(@user,:sort_by=>"frequency"), class: "btn btn-large", remote: true %></th>
+		</tr></thead>
+	<% @jobs.each do |j| %>
+			<tr id="<%= j.id %>" class="<%= if j.status=="Aborted" or j.status=="Failed" then "danger" end %>">
+                <td><b><%= j.title %></b></td>
+				<td><%= j.jobtype.jobtype_name if not j.jobtype_id.nil? %></td>
+                <td><p id="<%= j.id %>_status" class="<%= if j.status=="Failed" then "text-danger" end%>"><%= j.status %></p></td>
+				<td>
+				<div class="progress">
+  					<div id="<%= j.id %>_progress" class="progress-bar <%= if j.status=="Failed" then "progress-bar-danger" else if j.status=="Successed" then "progress-bar-success" else "progress-bar-info" end end%> progress-bar-striped" role="progressbar" aria-valuenow="<%= j.progress %>" aria-valuemin="0" aria-valuemax="100" style="width:<%= j.progress %>">
+					<%= j.progress %>	
+					</div>
+				</div>
+				</td>
+				<td id="<%= j.id %>_last_end_at" ><%= j.last_end_at %></td>
+				<td id="<%= j.id %>_next_run_at" ><%= j.next_run_at %></td>
+				<td><%= j.frequency %></td>
+			</tr>
+    	<% end %>
+    </table>
+</div>
+<style>
+.table td {
+text-align: center;   
+}
+.table th {
+text-align: center;   
+}
+.table th a {
+    padding-bottom: 0;
+}
+</style>

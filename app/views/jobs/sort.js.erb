@@ -1,0 +1,32 @@
+var html="<%= j(render 'joblist') %>";
+$("table#<%= j(@user.id.to_s)%>").html(html);
+//readd context menu since table regenerate 
+$("td").contextMenu({
+    menuSelector: "#contextMenu",
+    menuSelected: function (invokedOn, selectedMenu) {
+	var job_tr=invokedOn.parent()
+	while (! job_tr.attr('id'))
+	{
+		job_tr=job_tr.parent()
+	}
+	switch(selectedMenu.text()) {
+	case 'Modify':
+		$('#modify').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/edit')
+		break;
+	case 'Delete':
+		$('#delete').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id'))
+		break;
+	case 'Run':
+		$('#run').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/run')
+		break;
+	case 'Abort':
+		$('#abort').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/abort')
+		break;
+	case 'Log':
+		$('#log').attr('href','/users/'+$('table').attr('id')+'/jobs/'+job_tr.attr('id')+'/historys')
+		break;
+
+	}	
+    }
+});
+

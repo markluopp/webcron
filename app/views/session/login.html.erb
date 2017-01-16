@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="row">
+    	<div class="jumbotron" style="margin-top: 20%;">
+    		<h1>WebCron</h1> 
+    		<p class="text-info">The MIT License (MIT) Copyright (c) 2017 Genghui Luo</p>
+    	</div>
+    	<%= render 'shared/error_msg' %>	
+    </div>
+    <div class="row">
+    	<div class="col-md-3 col-sm-3 col-md-offset-2 col-sm-offset-2">
+        	<%= image_tag("webcron-login.png", size: "150x90", class: 'img-responsive img-center') %>
+	    </div>
+
+	    <div class="col-md-6 col-sm-6">
+			<p clas="text-danger"><%= session[:last_err_msg] %></p>
+			<%= form_for :session, :html=>{class: 'form-horizontal'}, remote:true do |f|  %>
+       			<div class="form-group"> 
+       			    <%= f.label :username, class: 'col-md-2  col-sm-2 control-label' %>
+       			    <div class="col-md-5 col-sm-5">
+       			        <%= f.text_field :username, class: 'form-control' %>
+       			    </div>     
+       			</div>
+       			<div class="form-group">
+			    <%= f.label :password, class: 'col-md-2 col-sm-2 control-label' %>
+       			    <div class="col-md-5 col-sm-5">            
+       			        <%= f.password_field :passwd, class: 'form-control' %>
+       			    </div> 
+       			</div>
+       			<div class="form-group"> 
+       			    <div class="col-md-6 col-sm-6 col-md-offset-2 col-sm-offset-2"> 
+       			        <%= f.submit 'Login', class: 'btn btn-success' %>
+                        <a href="mailto:your_email@xxx.com?subject=I need an account for WebCron." class="btn btn-success">I Don't Have Account</a>
+       			    </div>
+       			</div>
+       			<% end %>
+	    </div>
+    </div>
+
+</div>

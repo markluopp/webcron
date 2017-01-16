@@ -1,0 +1,140 @@
+<div class="container">
+	<div class="row">
+		<%= render 'shared/header' %>
+	</div>
+	<div class="row">
+	<div class="page-header">
+ 		<h1>Admin Console</h1>
+	</div>
+	<ul class="nav nav-tabs nav-justified">
+      		<li role="presentation" class="active"><a href="<%= users_path %>">Account</a></li>
+      		<li role="presentation"><a href="<%= jobtypes_path %>">Jobtype</a></li>
+    	</ul>
+	</div>	
+
+    <div class="row">
+        <div class="table-responsive" style="overflow-x: auto">
+		<table class="table table-striped">
+		<tr class="info">
+			<th>Account Name</th>
+			<th>Account Type</th>
+			<th>Permit Job Type</th>
+		</tr>
+		<% @users.each do |u| %>
+			<% if u.user_type!='admin' %>
+			<tr id="<%= u.id %>">	
+				<td><%= u.username %></td>
+				<td><%= u.user_type %></td>
+				<td>
+				<select class="form-control">	
+				<% u.jobtypes.each do |t| %>
+					<option><%= t.jobtype_name %></option>
+				<% end %>
+				</select>
+				</td>
+			</tr>
+			<% end %>
+		<% end %>
+        </table>
+        </div>
+	</div>
+	
+	<div class="row">
+		<%= link_to 'Create New Account', new_user_path, class: "btn btn-success"%>
+		<%= link_to 'Log Out', logout_user_path(session[:user_id]), class: "btn btn-warning"%>
+	</div>
+<div>
+	
+<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
+	<li><a id="modify" href="#">Modify</a></li>
+	<li class="divider"></li>
+	<li><a data-toggle="modal" data-target="#delete_confirm">Delete</a></li> 
+</ul>
+
+<!-- Modal -->
+<div id="delete_confirm" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4 class="modal-title">Are you sure?</h4>
+      </div>
+      <div class="modal-footer">
+     	<a id="delete" class="btn btn-danger" href="" data-method="delete">Yes</a> 
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function ($, window) {
+
+    $.fn.contextMenu = function (settings) {
+
+        return this.each(function () {
+
+            // Open context menu
+            $(this).on("contextmenu", function (e) {
+                // return native menu if pressing control
+                if (e.ctrlKey) return;
+                
+                //open menu
+                var $menu = $(settings.menuSelector)
+                    .data("invokedOn", $(e.target))
+                    .show()
+                    .css({
+                        position: "absolute",
+                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
+                        top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+                    })
+                    .off('click')
+                    .on('click', 'a', function (e) {
+                        $menu.hide();
+                
+                        var $invokedOn = $menu.data("invokedOn");
+                        var $selectedMenu = $(e.target);
+                        
+                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
+                    });
+                
+                return false;
+            });
+
+            //make sure menu closes on any click
+            $('body').click(function () {
+                $(settings.menuSelector).hide();
+            });
+        });
+        
+        function getMenuPosition(mouse, direction, scrollDir) {
+            var win = $(window)[direction](),
+                scroll = $(window)[scrollDir](),
+                menu = $(settings.menuSelector)[direction](),
+                position = mouse + scroll;
+                        
+            // opening menu would pass the side of the page
+            if (mouse + menu > win && menu < mouse) 
+                position -= menu;
+            
+            return position;
+        }    
+
+    };
+})(jQuery, window);
+
+$("td").contextMenu({
+    menuSelector: "#contextMenu",
+    menuSelected: function (invokedOn, selectedMenu) {
+	switch(selectedMenu.text()) {
+	case 'Modify':
+		$('#modify').attr('href','/users/'+invokedOn.parent().attr('id')+'/edit')
+		break;
+	case 'Delete':
+		$('#delete').attr('href','/users/'+invokedOn.parent().attr('id')+'')
+		break;
+	}	
+    }
+});
+</script>

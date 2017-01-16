@@ -1,0 +1,79 @@
+<%= form_for @jobtype,:html=>{class: 'form-horizontal'}, remote: true do |f| %>
+
+<!-- Modal -->
+<div id="verify_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Jobtype Validation Result</h4>
+      </div>
+	<div class="modal-body" id="verify_result">
+     	<!-- log --> 
+	</div>
+      <div class="modal-footer">
+        <a type="button" class="btn btn-warning" href="#" data-method="delete">Revoke</a>
+        <a type="button" class="btn btn-success" href="<%= jobtypes_path %>">Continue</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+	<div class="form-group">
+		<%= f.label :jobtype_name, class: 'col-md-4 control-label' %>
+		<div class="col-md-4">
+			<%= f.text_field :jobtype_name, class: 'form-control' %>
+		</div>
+	</div>
+
+    <div class="form-group">
+		<%= f.label :call_script, class: 'col-md-4 control-label' %>
+		<div class="col-md-6">
+			<%= f.text_field :call_script, class: 'form-control' %>
+		</div>
+	</div>
+
+    <table class="table" id="parameter_options">
+        <tr>
+            <th>Parameter Name</th>
+            <th>Parameter Instruction</th>
+        </tr>
+        <% @jobtype.parameter_options.each_with_index do |po,i| %>
+            <tr>
+                <td>
+                    <%= text_field :param_name, (i+1).to_s, value: po.param_name, class: 'form-control' %>
+                </td>
+                <td>
+                    <%= text_field :param_help, (i+1).to_s, value: po.param_help, class: 'col-md-4 form-control' %>
+                </td>
+                <td>
+                    <button class="btn btn-danger" id="delete_param">Delete</button>
+                </td>
+            </tr>
+        <% end %>
+    </table>
+	<div class="form-group">
+		<div class="col-md-4 col-md-offset-4">
+            <%= link_to 'Add Parameter','', class: 'btn btn-info', id: 'add_param' %>
+			<%= f.submit 'Submit', class: 'btn btn-success' %>		
+			<%= link_to 'Cancel', jobtypes_path, class: "btn btn-success" %>
+		</div>
+	</div>
+
+<% end %>
+<script>
+    $('table').on('click','.btn',function(e) {
+        $(this).parent().parent().remove(); 
+        e.preventDefault();
+    })
+
+    $('#add_param').click(function(e) {
+        exist_opt=$('tr').length-1
+        $('tbody').append("<%= j( render 'parameter' )%>");
+        $("[name='param_help[0]']").attr('name','param_help['+(exist_opt+1)+']')
+        $("[name='param_name[0]']").attr('name','param_name['+(exist_opt+1)+']')
+        e.preventDefault();
+    })
+</script>

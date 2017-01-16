@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  param_name: MyString
+  param_value: MyText
+  job_id: 
+
+two:
+  param_name: MyString
+  param_value: MyText
+  job_id: 

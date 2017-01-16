@@ -1,0 +1,98 @@
+<%= form_for [@user,@job], :html=>{class: 'form-horizontal'}, remote:true do |f| %>
+
+	<div class="form-group">
+		<%= f.label :job_title, class: 'col-md-4 control-label' %>
+		<div class="col-md-4">	
+			<%= f.text_field :title, class: 'form-control' %>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<%= f.label :job_type, class: 'col-md-4 control-label'  %>
+		<div class="col-md-4">
+			<%= f.select(:jobtype_id,@user.jobtypes.pluck(:jobtype_name,:id),{},{:class=>'form-control'}) %>
+		</div>
+	</div>
+
+    <div id="selected_jobtype">
+
+    </div>
+    
+   <div class="form-group">
+		<%= f.label :alert_email, class: 'col-md-4 control-label'  %>
+		<div class="col-md-4">
+			<%= f.email_field :alert_email, class: 'form-control' , placeholder: 'who@example.com'  %>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<%= f.label :first_run_at, class: 'col-md-4 control-label'  %>
+		<div class="col-md-4 input-group date" id="datetimepicker">
+			<%= f.text_field :first_run_at, class: 'form-control'  %>
+			<span class="input-group-addon">
+                        	<span class="glyphicon glyphicon-calendar"></span>
+                    	</span>
+		</div>	
+	</div>
+	
+	<div class="form-group">
+		<%= f.label :frequency, class: 'col-md-4 control-label'  %>
+		<div class="col-md-4">	
+			<%= f.select(:frequency,[['daily','daily'],['weekly','weekly'],['monthly','monthly']],{},{:class=>'form-control'}) %>
+		</div>
+	</div>
+
+	
+	<div class="form-group">
+		<div class="col-md-4 col-md-offset-4">		
+			<%= f.submit 'Submit' ,class: 'btn btn-success'%>
+			<%= link_to 'Cancel', user_jobs_path(@user), class: 'btn btn-success' %>
+		</div>
+    </div>
+
+<% end %>
+
+<div style="display: none;">
+    <% @user.jobtypes.each_with_index do |jt,i| %>
+        <div id="jobtype_<%= jt.id.to_s %>"> 
+        <% jt.parameter_options.each do |p| %>
+	        <div class="form-group">
+		        <%= label :parameter,p.param_name, class: 'col-md-4 control-label' %>
+                <div class="col-md-4">
+                    <% exist_param=Parameter.find_by(job_id:@job.id,param_name:p.param_name) if not @job.id.nil? %>
+                    <% if p.param_help.include? '|' %>
+                        <% options=p.param_help.split('|').map{|ph| [ph,ph]} %>
+                        <% until options.first.first==exist_param.param_value do options.rotate! end if not exist_param.nil? %>
+                        <%= select :param_value,p.param_name,options,{},{:class=>'form-control'} %> 
+                    <% else %>
+                        <% if p.param_help.include? 'textarea' %>
+                            <%= text_area :param_value,p.param_name,value: "#{exist_param.param_value if not exist_param.nil?}", rows: 10, class: 'form-control', data: {toggle: 'tooltip', placement: 'right'}, title: p.param_help.gsub('<textarea>','') %>
+                        <% else %> 
+                            <%= text_field :param_value,p.param_name,value: "#{exist_param.param_value if not exist_param.nil?}", class: 'form-control', data: {toggle: 'tooltip', placement: 'right'}, title: p.param_help %>
+                        <% end %>
+                    <% end %>
+		        </div>
+	        </div>
+        <% end %>
+        </div>
+    <% end %>
+</div>
+
+<script type="text/javascript">
+var jobtype_id=$('#job_jobtype_id').val()
+$('#selected_jobtype').html($('#jobtype_'+jobtype_id).html());
+
+$(function () {
+	$('#datetimepicker').datetimepicker();
+});
+
+$('#job_jobtype_id').change(function() {
+    var jobtype_id=$('#job_jobtype_id').val()
+    $('#selected_jobtype').html($('#jobtype_'+jobtype_id).html());
+    $('[data-toggle="tooltip"]').tooltip(); //add new tooltip, need enable
+});
+
+$('[data-toggle="tooltip"]').tooltip();
+</script>
+
+

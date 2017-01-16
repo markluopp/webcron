@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  params: MyString
+  alert_email: MyString
+  status: MyString
+  first_run_at: 2016-03-21 11:59:39
+  frequency: MyString
+  job_type: MyString
+  create_at: 2016-03-21 11:59:39
+  update_at: 2016-03-21 11:59:39
+
+two:
+  title: MyString
+  params: MyString
+  alert_email: MyString
+  status: MyString
+  first_run_at: 2016-03-21 11:59:39
+  frequency: MyString
+  job_type: MyString
+  create_at: 2016-03-21 11:59:39
+  update_at: 2016-03-21 11:59:39
