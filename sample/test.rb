@@ -6,7 +6,7 @@ def usage
     exit 1
 end
 
-if ARGV.count != 3
+if ARGV.count != 2
     usage
 end
 
@@ -21,7 +21,6 @@ puts "echoStr: #{ARGV[1]}"
 unknow_function()
 
 sleep 10
-puts "echoDetail: #{ARGV[2]}"
 
 rescue Exception => e
     puts e.message
