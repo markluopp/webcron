@@ -7,6 +7,12 @@
   - mysql, >= 14.14
   - node, >= 6.9
 
+## 20170214 branch: rails engine mode
+- like [pghero](https://github.com/ankane/pghero)
+- rails runner instead of rake task
+- clock process(e.g. sidekiq-cron) instead of crontab
+- [code style](https://github.com/bbatsov/ruby-style-guide)
+
 ## deployment
 ```
 > git@github.com:genghuiluo/webcron.git
