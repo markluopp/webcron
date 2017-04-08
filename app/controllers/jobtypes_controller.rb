@@ -12,9 +12,11 @@ class JobtypesController < ApplicationController
         @jobtype=Jobtype.new(jobtype_name:params[:jobtype][:jobtype_name],call_script:params[:jobtype][:call_script])
 		if @jobtype.valid?
 			@jobtype.save
-            params[:param_name].each_pair do |k,v|
-                @parameter_option=ParameterOption.new(param_name:v,param_help:params[:param_help][k],jobtype_id:@jobtype.id)
-                @parameter_option.save
+            if not params[:param_name].nil?
+                params[:param_name].each_pair do |k,v|
+                    @parameter_option=ParameterOption.new(param_name:v,param_help:params[:param_help][k],jobtype_id:@jobtype.id)
+                    @parameter_option.save
+                end
             end
 			@verify_result=simple_format(verify_jobtype(@jobtype.call_script))
 			render 'verify'
@@ -33,9 +35,11 @@ class JobtypesController < ApplicationController
 		@jobtype.update(jobtype_name:params[:jobtype][:jobtype_name],call_script:params[:jobtype][:call_script])
 		if @jobtype.valid?	
             @jobtype.parameter_options.each{|p| p.destroy}
-            params[:param_name].each_pair do |k,v|
-                @parameter_option=ParameterOption.new(param_name:v,param_help:params[:param_help][k],jobtype_id:@jobtype.id)
-                @parameter_option.save
+            if not params[:param_name].nil?
+                params[:param_name].each_pair do |k,v|
+                    @parameter_option=ParameterOption.new(param_name:v,param_help:params[:param_help][k],jobtype_id:@jobtype.id)
+                    @parameter_option.save
+                end
             end
 			@verify_result=simple_format(verify_jobtype(@jobtype.call_script))
 			render 'verify'	

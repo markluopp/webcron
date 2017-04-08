@@ -33,9 +33,11 @@ class JobsController < ApplicationController
 			next_run_at=when_next(first_run_at,params[:job][:frequency])
 			@job.update(next_run_at:next_run_at)
 		 	@job.save
-            params[:param_value].each_pair do |k,v|
-                @parameter=Parameter.new(param_name:k,param_value:v,job_id:@job.id)
-                @parameter.save
+            if not params[:param_value].nil?
+                params[:param_value].each_pair do |k,v|
+                    @parameter=Parameter.new(param_name:k,param_value:v,job_id:@job.id)
+                    @parameter.save
+                end
             end
 			render js: "window.location='#{user_jobs_path(@user)}'"	
 		else
@@ -58,9 +60,11 @@ class JobsController < ApplicationController
 		 	next_run_at=when_next(first_run_at,params[:job][:frequency])
 			@job.update(next_run_at:next_run_at)
             @job.parameters.each{|p| p.destroy}
-            params[:param_value].each_pair do |k,v|
-                @parameter=Parameter.new(param_name:k,param_value:v,job_id:@job.id)
-                @parameter.save
+            if not params[:param_value].nil?
+                params[:param_value].each_pair do |k,v|
+                    @parameter=Parameter.new(param_name:k,param_value:v,job_id:@job.id)
+                    @parameter.save
+                end
             end
 		 	rm_crontab(@job.id)
 		 	add_crontab(first_run_at,@job.id) 
@@ -132,14 +136,18 @@ private
 	def add_crontab(first_run_at,job_id)
         which_rake=%x[which rake].strip
         cmd_str="cd #{Rails.root.to_s} && #{which_rake} RAILS_ENV=#{Rails.env} webcron:excutejob[#{job_id}] >>/tmp/webcron.#{Rails.env}.log 2>&1"
-        case params[:job][:frequency]
-		    when "monthly"
-		       	time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" "+first_run_at.strftime("%-d")+" * *"
-		    when "weekly"
-		       	time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" * * "+first_run_at.strftime("%u")
-		    when "daily"
-	   		    time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" * * *"
-	    end
+            case params[:job][:frequency]
+		        when "monthly"
+		       	    time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" "+first_run_at.strftime("%-d")+" * *"
+		        when "weekly"
+		       	    time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" * * "+first_run_at.strftime("%u")
+		        when "daily"
+	   		        time_str=first_run_at.strftime("%M")+" "+first_run_at.strftime("%k")+" * * *"
+                when "hourly"
+	   		        time_str=first_run_at.strftime("%M")+" * * * *"
+                when "minutely"
+	   		        time_str="* * * * *"
+            end
 		crontab_str="crontab -l | { cat; echo '"+time_str+" "+cmd_str+"';} | crontab -"
 		system crontab_str
     end
@@ -167,6 +175,10 @@ private
 				when 'hourly'
 					while Time.zone.now>next_run_at
 						next_run_at=next_run_at+1.hours			
+					end
+				when 'minutely'
+					while Time.zone.now>next_run_at
+						next_run_at=next_run_at+1.minutes			
 					end
 			end
 		return next_run_at
