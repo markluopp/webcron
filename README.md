@@ -2,10 +2,10 @@
 - A rails web application to schedule job, reply on linux crontab
 - The MIT License (MIT) Copyright (c) 2017 Genghui Luo 
 - Dependencies:
-  - ruby, >= 2.2
-  - rails, >= 4.2
-  - mysql, >= 14.14
-  - node, >= 6.9
+  - ruby, >= 2.4.0
+  - rails, >= 5.0.2
+  - MariaDB, >= 5.5.52
+  - node, >= 6.10.1
 
 ## deployment
 ```
